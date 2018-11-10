@@ -1,14 +1,7 @@
 image:
   repository: gcr.io/heptio-images/ark
-  tag: v0.9.1
+  tag: v{{ .Chart.AppVersion }}
   pullPolicy: IfNotPresent
-
-# A docker image with kubectl installed
-kubectl:
-  image:
-    repository: claranet/gcloud-kubectl-docker
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
 
 # Only kube2iam: change the AWS_ACCOUNT_ID and HEPTIO_ARK_ROLE_NAME
 podAnnotations: {}
@@ -18,6 +11,10 @@ rbac:
   create: true
 
 resources: {}
+
+logging:
+  level: info
+  to: stderr  # or files or both
 
 serviceAccount:
   hook:
@@ -43,6 +40,8 @@ configuration:
   backupStorageProvider:
     name:
     bucket:
+    # <bucket>[/<prefix>], MUST be a different bucket than the main Ark bucket
+    resticLocation:
     config: {}
     #  region:
     #  s3ForcePathStyle:
@@ -59,3 +58,9 @@ credentials:
   existingSecret:
   useSecret: true
   secretContents: {}
+  #  aws: |
+  #   [default]
+  #   aws_access_key_id=<KEY>
+  #   aws_secret_access_key=<SECRET>
+  #    gcp: |
+  #      <gcloud iam service-accounts keys create - --iam-account $SERVICE_ACCOUNT_EMAIL>

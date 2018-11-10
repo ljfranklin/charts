@@ -1,17 +1,12 @@
 # Ark-server
 
-This helm chart installs Ark version v0.9.0
-https://github.com/heptio/ark/tree/v0.9.0
+This helm chart installs Ark version v0.9
+
+https://github.com/heptio/ark/tree/release-0.9
 
 ## Premise
-In general, Helm cannot install CRDs and resources based on these CRDs in the same Helm chart because CRDs need to be installed before CRD
-resources can be created and Helm cannot guarantee the correct ordering for this to work.
-
-As a workaround, the chart creates a Config resource via post-install hook.
-Since resources created by hooks are not managed by Helm, a pre-delete hook removes the Config CRD when the release is deleted.
-
-At the same time the resources created with the hook are completely transparent to Helm, that is, when you delete the
-chart those resources remain there. Hence we need a second hook for deleting them (see hook-delete.yaml)
+We leverage the `crd-install` hook of Helm, which was introduced in Helm 2.10.
+You must therefore use Helm 2.10 or higher.
 
 ## ConfigMap customization
 Since we want to have a customizable chart it's important that the configmap is a template and not a static file.
@@ -67,12 +62,13 @@ Parameter | Description | Default
 `configuration.persistentVolumeProvider.name` | The name of the cloud provider the cluster is using for persistent volumes, if any | `{}`
 `configuration.persistentVolumeProvider.config.region` | The cloud provider region (AWS only) | ``
 `configuration.persistentVolumeProvider.config.apiTimeout` | The API timeout (Azure only) |
-`configuration.backupStorageProvider.nam` | The name of the cloud provider that will be used to actually store the backups (`aws`, `azure`, `gcp`) | ``
+`configuration.backupStorageProvider.name` | The name of the cloud provider that will be used to actually store the backups (`aws`, `azure`, `gcp`) | ``
 `configuration.backupStorageProvider.bucket` | The storage bucket where backups are to be uploaded | ``
 `configuration.backupStorageProvider.config.regio`n | The cloud provider region (AWS only) | ``
 `configuration.backupStorageProvider.config.s3ForcePathStyle` | Set to `true` for a local storage service like Minio | ``
 `configuration.backupStorageProvider.config.s3Url` | S3 url (primarily used for local storage services like Minio) | ``
 `configuration.backupStorageProvider.config.kmsKeyId` | KMS key for encryption (AWS only) | ``
+`configuration.backupStorageProvider.resticLocation` | The name of the bucket Restic backups will be stored in. This will automatically enable the Restic DaemonSet. | ``
 `configuration.backupSyncPeriod` | How frequently Ark queries the object storage to make sure that the appropriate Backup resources have been created for existing backup files | `60m`
 `configuration.gcSyncPeriod` | How frequently Ark queries the object storage to delete backup files that have passed their TTL | `60m`
 `configuration.scheduleSyncPeriod` | How frequently Ark checks its Schedule resource objects to see if a backup needs to be initiated | `1m`
