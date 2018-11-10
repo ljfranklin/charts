@@ -26,13 +26,16 @@ persistentVolumeProvider:
 backupStorageProvider:
   name: {{ .name }}
   bucket: {{ .bucket  }}
+  {{- if .Values.configuration.backupStorageProvider.resticLocation -}}
+  resticLocation: {{ .Values.configuration.backupStorageProvider.resticLocation }}
+  {{- end }}
 {{- with .config }}
   config:
   {{- with .region }}
     region: {{ . }}
   {{- end }}
   {{- with .s3ForcePathStyle }}
-    s3ForcePathStyle: {{ . }}
+    s3ForcePathStyle: {{ . | quote }}
   {{- end }}
   {{- with .s3Url }}
     s3Url: {{ . }}
