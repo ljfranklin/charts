@@ -26,8 +26,8 @@ persistentVolumeProvider:
 backupStorageProvider:
   name: {{ .name }}
   bucket: {{ .bucket  }}
-  {{- if .Values.configuration.backupStorageProvider.resticLocation -}}
-  resticLocation: {{ .Values.configuration.backupStorageProvider.resticLocation }}
+  {{- with .resticLocation }}
+  resticLocation: {{ . }}
   {{- end }}
 {{- with .config }}
   config:
